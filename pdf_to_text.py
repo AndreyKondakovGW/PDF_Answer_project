@@ -51,7 +51,7 @@ def image_to_text(image_path):
     text = MODEL(img)
     return f'${text}$'
 
-def pdf_to_text(pdf_file):
+def pdf_to_text(pdf_file, save_images = False, verbose = False):
     pdfFileObj = open(pdf_file, 'rb')
     pdfReader = PdfReader(pdf_file)
     text = ""
@@ -60,7 +60,8 @@ def pdf_to_text(pdf_file):
         pageObj = pdfReader.pages[pagenum]
         page_size = abs(pageObj.mediabox.upper_right[0] - pageObj.mediabox.lower_left[0])*abs(pageObj.mediabox.lower_left[1] - pageObj.mediabox.upper_right[1])
         page_text = [f'\n Page {pagenum+1}: \n']
-        print(f'Page {pagenum+1}')
+        if verbose:
+            print(f'Page {pagenum+1}')
         page_content = []
         page_elements = [(element.y1, element) for element in page._objs]
         page_elements.sort(key=lambda a: a[0], reverse=True)
@@ -72,8 +73,8 @@ def pdf_to_text(pdf_file):
             
             pos= component[0]
             element = component[1]
-
-            print(f'Element {i} at {pos} is {element}')
+            if verbose:
+                print(f'Element {i} at {pos} is {element}')
             if isinstance(element, LTTextContainer):
                 (line_text, _) = text_extraction(element)
                 page_text.append(line_text)
@@ -82,12 +83,16 @@ def pdf_to_text(pdf_file):
                 page_image_ratio = crop_image(element, pageObj, page_size)
                 if page_image_ratio < 0.08:
                     convert_to_images('cropped_image.pdf')
-                    convert_to_images('cropped_image.pdf', f'./formulas/page{pagenum+1}_formula{num_formulas}.png')
+                    if save_images:
+                        convert_to_images('cropped_image.pdf', f'./formulas/page{pagenum+1}_formula{num_formulas}.png')
                     image_text = '\n' +image_to_text('PDF_image.png') + '\n'
                     num_formulas += 1
                 else:
-                    convert_to_images('cropped_image.pdf', f'./images/page{pagenum+1}_img{num_images}.png')
-                    image_text = f'<img src=./images/page{pagenum+1}_img{num_images}.png>'
+                    if save_images:
+                        convert_to_images('cropped_image.pdf', f'./images/page{pagenum+1}_img{num_images}.png')
+                        image_text = f'<img src=./images/page{pagenum+1}_img{num_images}.png>'
+                    else:
+                        image_text = ''
                     num_images += 1
                 page_text.append(image_text)
 
@@ -103,12 +108,7 @@ def pdf_to_text(pdf_file):
 
 
 if __name__ == "__main__":
-    """ pdf_text = pdf_to_text("./pdf_examples/5_Random_processes_2.pdf")
+    pdf_text = pdf_to_text("./pdf_examples/5_Random_processes_2.pdf")
     #save text as md file
     with open('pdf_text.md', 'w', encoding="utf-8") as f:
-        f.write(pdf_text) """
-    
-    img = Image.open("example.png")
-    # Extract the text from the image
-    text = MODEL(img)
-    print(text)
+        f.write(pdf_text)
