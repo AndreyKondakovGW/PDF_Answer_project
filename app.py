@@ -28,12 +28,18 @@ def main():
         handle_userinput(user_question)
 
     with st.sidebar:
+        st.subheader("Select your models")
+        st.write("Select the model you want to use for the vectorstore and the conversation chain")
+        vectormodel_name = st.selectbox("Vectorstore model", ["openai", "instructor-base"])
+        conversation_model_name = st.selectbox("Conversation model", ["openai", "flan"])
         st.subheader("Your documents")
         pdf_docs = st.file_uploader(
             "Upload your Files here and click on 'Process'", accept_multiple_files=True)
+        #input for site url
+        url = st.text_input("Enter the site url here:")
         if st.button("Process"):
             with st.spinner("Processing"):
-                st.session_state.conversation = get_model_fromfiles(pdf_docs)
+                st.session_state.conversation = get_model_fromfiles(pdf_docs, vectormodel_name, conversation_model_name)
 
 
 if __name__ == '__main__':
