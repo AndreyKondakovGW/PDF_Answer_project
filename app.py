@@ -2,6 +2,7 @@ import streamlit as st
 from htmlTemplates import css, bot_template, user_template
 from src.model import LangchainModel
 from src.retriver import Retriver
+import os
 
 def main():
     st.set_page_config(page_title="Chat with multiple files",
@@ -29,7 +30,8 @@ def main():
         url = st.text_input("Enter the site url here:")
         if st.button("Process"):
             with st.spinner("Processing"):
-                temp_file = "./temp.pdf"
+                os.makedirs("./tmp")
+                temp_file = "./tmp/temp.pdf"
                 with open(temp_file, "wb") as file:
                     file.write(pdf_docs.getvalue())
                     file_name = pdf_docs.name
