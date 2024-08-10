@@ -1,7 +1,7 @@
 # PDF_Answer_project
-Small project to use LLM for finding information inside pdf files.
+A small project on using LLM to search for information in PDF files.
 
-Use LangChanin for RAG and Ollama to get easy interaface for LLMs
+Use LangChanin for RAG and Ollama to get a simple interface for LLMs
 
 # Start
 1) Install Ollama for your system: https://ollama.com/download
@@ -18,3 +18,5 @@ pip install -r ./requirements.txt
 ```
 streamlit run .\app.py
 ```
+
+Adding a file may take some time, especially if you are adding a large file
